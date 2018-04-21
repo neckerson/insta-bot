@@ -31,10 +31,13 @@ class Account
     init_capybara
 
     if logged_in?
-      confirm_logged_in
     else
       do_login
-      confirm_logged_in
+      if logged_in?
+        confirm_logged_in
+      else
+        puts 'not logged in'
+      end
     end
 
     loop do
@@ -76,7 +79,6 @@ class Account
   end
 
   def logged_in?
-    get_feed_page
     has_xpath?("//*[contains(@class, 'js logged-in')]")
   end
 
@@ -121,7 +123,7 @@ class Account
   end
 
   def get_feed_page
-    visit '/'
+    visit @username
   end
 
   def like_image(shortcode)
