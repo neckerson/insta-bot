@@ -5,8 +5,8 @@ require 'json'
 require 'yaml'
 
 config = YAML.load_file('config.yml')
-password = config['bot']['password']
 username = config['bot']['username']
+password = config["bot"]["password"]
 hashtags = config['bot']['hashtags']
 
 feed_delay = 5400 #seconds before liking feed posts
