@@ -54,7 +54,7 @@ class Account
 
   def hashtag_likes
     get_random_tag
-    build_like_target_array
+    build_shortcode_array
     do_likes
     sleep 30
   end
@@ -62,7 +62,7 @@ class Account
   def feed_likes
     puts 'loading feed page'
     get_feed_page
-    build_like_target_array
+    build_shortcode_array
     do_likes
   end
 
@@ -93,23 +93,25 @@ class Account
     click_button 'Log in'
   end
 
-  def build_like_target_array
-    @like_array = Array.new
+  def build_shortcode_array
 
-    json = find :xpath, "//script[contains(., 'window._sharedData')]", visible: false
+    @shortcode_array = Array.new
+    json_xpath = "//script[contains(., 'window._sharedData')]"
 
-    json_hash = JSON.parse(json[:text][21..-1].chop!)
+    json = find :xpath, json_xpath, visible: false
 
-   json_hash['entry_data']['TagPage'][0]['graphql']['hashtag']['edge_hashtag_to_media']['edges'].each { |obj| 
+    hash = JSON.parse(json[:text][21..-1].chop!)
 
-     @like_array.push obj['node']['shortcode']
+    hash['entry_data']['TagPage'][0]['graphql']['hashtag']['edge_hashtag_to_media']['edges'].each { |obj|
+
+      @shortcode_array.push obj['node']['shortcode']
 
     }
-     puts 'Array of ' + @like_array.length.to_s + ' like targets built'
+    puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
   end
 
   def do_likes
-    @like_array.each do |t|
+    @shortcode_array.each do |t|
       like_image(t)
       puts "Liked shortcode /" + t
       sleep @sleep_intervals.sample
