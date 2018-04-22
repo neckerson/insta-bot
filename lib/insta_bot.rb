@@ -1,17 +1,17 @@
-require 'rspec'
-require 'capybara-webkit'
-require 'capybara/dsl'
-require 'json'
-require 'yaml'
+  require 'rspec'
+  require 'capybara-webkit'
+  require 'capybara/dsl'
+  require 'json'
+  require 'yaml'
 
-config = YAML.load_file('config.yml')
+  config = YAML.load_file('../config.yml')
 username = config['bot']['username']
 password = config["bot"]["password"]
 hashtags = config['bot']['hashtags']
 
-feed_delay = 5400 #seconds before liking feed posts
+feed_delay = 3200 #seconds before liking feed posts
 
-class Account
+class InstaBot
 
   include RSpec::Matchers
   include Capybara::DSL
@@ -138,5 +138,5 @@ class Account
   end
 end
 
-bot = Account.new(username, password, hashtags, feed_delay)
+bot = InstaBot.new(username, password, hashtags, feed_delay)
 bot.run

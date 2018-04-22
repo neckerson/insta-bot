@@ -1,0 +1,7 @@
+# Gemfile
+source "https://rubygems.org"
+
+gem 'capybara-webkit'
+#gem 'capybara/dsl'
+gem 'json'
+gem 'rspec'
