@@ -4,7 +4,9 @@
   require 'json'
   require 'yaml'
 
-  config = YAML.load_file('../config.yml')
+  file_path = File.join(File.dirname(File.dirname(__FILE__)),"config.yml")
+
+  config = YAML.load_file(file_path)
 username = config['bot']['username']
 password = config["bot"]["password"]
 hashtags = config['bot']['hashtags']
