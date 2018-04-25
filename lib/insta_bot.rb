@@ -96,19 +96,16 @@ class InstaBot
   end
 
   def build_shortcode_array
-
     @shortcode_array = Array.new
     json_xpath = "//script[contains(., 'window._sharedData')]"
-
     json = find :xpath, json_xpath, visible: false
-
     hash = JSON.parse(json[:text][21..-1].chop!)
-
-    hash['entry_data']['TagPage'][0]['graphql']['hashtag']['edge_hashtag_to_media']['edges'].each { |obj|
-
-      @shortcode_array.push obj['node']['shortcode']
-
-    }
+    quarried_shortcodes = hash.dig('entry_data', 'TagPage', 0, 'graphql',
+                                   'hashtag', 'edge_hashtag_to_media',
+                                   'edges')&.map {
+                                     |s| s.dig('node', 'shortcode')
+                                   }
+    @shortcode_array += quarried_shortcodes || []
     puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
   end
 
