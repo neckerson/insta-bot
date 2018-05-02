@@ -1,17 +1,8 @@
-  require 'rspec'
-  require 'capybara-webkit'
-  require 'capybara/dsl'
-  require 'json'
-  require 'yaml'
-
-  file_path = File.join(File.dirname(File.dirname(__FILE__)),"config.yml")
-
-  config = YAML.load_file(file_path)
-username = config['bot']['username']
-password = config["bot"]["password"]
-hashtags = config['bot']['hashtags']
-
-feed_delay = 3200 #seconds before liking feed posts
+require 'rspec'
+require 'capybara-webkit'
+require 'capybara/dsl'
+require 'json'
+require 'yaml'
 
 class InstaBot
 
@@ -44,9 +35,9 @@ class InstaBot
 
     loop do
       if @time_now < @time_future
-        hashtag_likes
+        do_hashtag_likes
       else
-        feed_likes
+        do_feed_likes
         reset_time_future
       end
       @time_now = Time.new()
@@ -54,14 +45,14 @@ class InstaBot
 
   end
 
-  def hashtag_likes
+  def do_hashtag_likes
     get_random_tag
     build_shortcode_array
     do_likes
     sleep 30
   end
 
-  def feed_likes
+  def do_feed_likes
     puts 'loading feed page'
     get_feed_page
     build_shortcode_array
@@ -105,8 +96,8 @@ class InstaBot
                                    'edges')&.map {
                                      |s| s.dig('node', 'shortcode')
                                    }
-    @shortcode_array += quarried_shortcodes || []
-    puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
+                                   @shortcode_array += quarried_shortcodes || []
+                                   puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
   end
 
   def do_likes
@@ -136,6 +127,3 @@ class InstaBot
     @time_future = Time.new() + @feed_delay
   end
 end
-
-bot = InstaBot.new(username, password, hashtags, feed_delay)
-bot.run
