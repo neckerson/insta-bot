@@ -47,7 +47,7 @@ class InstaBot
 
   def do_hashtag_likes
     get_random_tag
-    build_shortcode_array
+    build_shortcode_array(get_page_json)
     do_likes
     sleep 30
   end
@@ -55,7 +55,7 @@ class InstaBot
   def do_feed_likes
     puts 'loading feed page'
     get_feed_page
-    build_shortcode_array
+    build_shortcode_array(get_page_json)
     do_likes
   end
 
@@ -86,18 +86,20 @@ class InstaBot
     click_button 'Log in'
   end
 
-  def build_shortcode_array
-    @shortcode_array = Array.new
+  def get_page_json
     json_xpath = "//script[contains(., 'window._sharedData')]"
     json = find :xpath, json_xpath, visible: false
-    hash = JSON.parse(json[:text][21..-1].chop!)
-    quarried_shortcodes = hash.dig('entry_data', 'TagPage', 0, 'graphql',
+    JSON.parse(json[:text][21..-1].chop!)
+  end
+
+  def build_shortcode_array(json)
+    @shortcode_array = Array.new
+    quarried_shortcodes = json.dig('entry_data', 'TagPage', 0, 'graphql',
                                    'hashtag', 'edge_hashtag_to_media',
                                    'edges')&.map {
                                      |s| s.dig('node', 'shortcode')
                                    }
-                                   @shortcode_array += quarried_shortcodes || []
-                                   puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
+    @shortcode_array += quarried_shortcodes || []
   end
 
   def do_likes
@@ -126,4 +128,10 @@ class InstaBot
   def reset_time_future
     @time_future = Time.new() + @feed_delay
   end
+
+  def log_progress
+    #puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
+    #puts quarried_shortcodes
+  end
+
 end
