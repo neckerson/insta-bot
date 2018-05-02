@@ -8,5 +8,7 @@ Dir[File.join(ROOT, 'spec', 'support', '**', '*.rb')].each{|f| require f }
 
 
 RSpec.configure do |config|
+  config.include JsonHelpers
+  config.include InitHelpers
   config.include TestData
 end
