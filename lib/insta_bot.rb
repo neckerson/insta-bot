@@ -87,7 +87,7 @@ class InstaBot
   end
 
   def get_page_json
-    json_xpath = "//script[contains(., 'window._sharedData')]"
+    json_xpath = "//script[contains(., 'window._sharedData = {')]"
     json = find :xpath, json_xpath, visible: false
     JSON.parse(json[:text][21..-1].chop!)
   end
