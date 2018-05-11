@@ -3,6 +3,7 @@ require 'capybara-webkit'
 require 'capybara/dsl'
 require 'json'
 require 'yaml'
+require 'logger'
 
 class InstaBot
 
@@ -23,13 +24,15 @@ class InstaBot
 
     init_capybara
 
+    start_logger
+
     if logged_in?
     else
       do_login
       if logged_in?
-        confirm_logged_in
+        @logger.info 'Logged in ' + @username
       else
-        puts 'not logged in'
+        @logger.error 'Did not log in ' + @username
       end
     end
 
@@ -53,7 +56,7 @@ class InstaBot
   end
 
   def do_feed_likes
-    puts 'loading feed page'
+    @logger.info 'loading feed page'
     get_feed_page
     build_shortcode_array(get_page_json)
     do_likes
@@ -73,10 +76,6 @@ class InstaBot
 
   def logged_in?
     has_xpath?("//*[contains(@class, 'js logged-in')]")
-  end
-
-  def confirm_logged_in
-    puts 'logged in ' + @username
   end
 
   def do_login
@@ -105,14 +104,14 @@ class InstaBot
   def do_likes
     @shortcode_array.each do |t|
       like_image(t)
-      puts "Liked shortcode /" + t
+      @logger.info "Liked shortcode /" + t
       sleep @sleep_intervals.sample
     end
   end
 
   def get_random_tag
     tag = @hashtags.sample
-    puts 'loaded tag: ' + tag
+    @logger.info 'loaded tag: ' + tag
     visit 'explore/tags/'+ tag
   end
 
@@ -129,9 +128,8 @@ class InstaBot
     @time_future = Time.new() + @feed_delay
   end
 
-  def log_progress
-    #puts 'Array of ' + @shortcode_array.length.to_s + ' like targets built'
-    #puts quarried_shortcodes
+  def start_logger
+    @logger = Logger.new('logfile.log')
   end
 
 end
